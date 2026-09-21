@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>イイトコ — 知らない誰かの星の数より、友だちのひとこと</title>
+<meta name="description" content="友だちが実際に行った店だけが地図に並ぶ、招待制の記録アプリ。公開機能はありません。">
+<link rel="icon" href="icon.png">
+<meta property="og:title" content="イイトコ">
+<meta property="og:description" content="知らない誰かの星の数より、友だちのひとこと">
+<meta property="og:type" content="website">
+<style>
+  :root{
+    --bg:#fffbf5; --fg:#2a2118; --muted:#7c7266; --line:#e7dfd5;
+    --accent:#2e7d6f; --accent-weak:#e6f0ed; --card:#ffffff;
+    --max:880px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#14171a; --fg:#e9e5df; --muted:#9aa0a6; --line:#2b3035;
+      --accent:#7fcbbb; --accent-weak:#1d2a28; --card:#1b1f23;
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--fg);
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+    line-height:1.8; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--max); margin:0 auto; padding:0 24px}
+  header{padding:72px 0 56px; text-align:center}
+  .mark{width:84px;height:84px;border-radius:24px;display:block;margin:0 auto 24px}
+  h1{font-size:clamp(28px,6vw,44px); margin:0 0 12px; letter-spacing:.01em}
+  .lead{font-size:clamp(15px,3.4vw,19px); color:var(--muted); margin:0 auto; max-width:34em}
+  .cta{margin-top:32px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap}
+  .btn{
+    display:inline-block; padding:13px 26px; border-radius:999px;
+    background:var(--accent); color:#fff; text-decoration:none; font-weight:600;
+  }
+  .btn.ghost{background:transparent; color:var(--accent); border:1px solid var(--accent)}
+  section{padding:56px 0; border-top:1px solid var(--line)}
+  h2{font-size:clamp(20px,4.4vw,28px); margin:0 0 8px}
+  .sub{color:var(--muted); margin:0 0 32px}
+  .grid{display:grid; gap:20px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .card{
+    background:var(--card); border:1px solid var(--line);
+    border-radius:16px; padding:22px;
+  }
+  .card h3{margin:0 0 8px; font-size:17px}
+  .card p{margin:0; color:var(--muted); font-size:15px}
+  .tag{
+    display:inline-block; padding:4px 12px; border-radius:999px;
+    background:var(--accent-weak); color:var(--accent);
+    font-size:13px; margin:0 6px 8px 0;
+  }
+  .quote{
+    border-left:3px solid var(--accent); padding:4px 0 4px 18px;
+    color:var(--muted); font-size:16px; margin:24px 0;
+  }
+  footer{
+    padding:40px 0 64px; border-top:1px solid var(--line);
+    color:var(--muted); font-size:14px; text-align:center;
+  }
+  footer a{color:var(--accent)}
+  .note{font-size:13px; color:var(--muted)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <img class="mark" src="icon.png" alt="">
+    <h1>知らない誰かの星の数より、<br>友だちのひとこと</h1>
+    <p class="lead">
+      友だちが実際に行った店だけが、地図に並びます。<br>
+      招待した人にしか見えないので、遠慮のない一言が書けます。
+    </p>
+    <div class="cta">
+      <a class="btn" href="#features">できること</a>
+      <a class="btn ghost" href="privacy.html">プライバシーポリシー</a>
+    </div>
+    <p class="note" style="margin-top:20px">※ 現在開発中です</p>
+  </header>
+
+  <section id="why">
+    <h2>点数を見ても、結局どこに行けばいいか分からない</h2>
+    <p class="sub">レビューサイトを開いて、そのまま閉じた経験はありませんか。</p>
+    <p>
+      知らない誰かの★4.0と、味の好みを知っている友だちの「ここは値段の割に微妙だった」。
+      判断に効くのは、たいてい後者です。
+    </p>
+    <div class="quote">
+      「安い。人は多いけど回転が早いから待たされない。刺身が意外といい。」<br>
+      — 友だちの記録より
+    </div>
+    <p>
+      イイトコ は、その一言を地図の上に置いておくためのアプリです。
+    </p>
+  </section>
+
+  <section id="features">
+    <h2>できること</h2>
+    <p class="sub">記録するのも、探すのも、数タップで終わります。</p>
+    <div class="grid">
+      <div class="card">
+        <h3>地図に友だちのピン</h3>
+        <p>自分と友だちの記録がピンで並びます。カテゴリと特徴で絞り込めます。</p>
+      </div>
+      <div class="card">
+        <h3>タップして星を選ぶだけ</h3>
+        <p>地図に出ているお店をタップ、評価を選べば記録完了。写真やメモは後から足せます。</p>
+      </div>
+      <div class="card">
+        <h3>地域からたどる</h3>
+        <p>都道府県 → 市区町村 と絞って、写真つきの一覧で見られます。旅行先を決めるときに。</p>
+      </div>
+      <div class="card">
+        <h3>特徴で絞る</h3>
+        <p>
+          <span class="tag">デート向き</span><span class="tag">ひとり飯</span>
+          <span class="tag">静か・落ち着く</span><span class="tag">コスパ◎</span>
+          <span class="tag">個室あり</span>
+          といった軸で、目的から探せます。
+        </p>
+      </div>
+      <div class="card">
+        <h3>また行った</h3>
+        <p>同じ店に何度行ったかが残ります。「3回 / 最終 7月20日」のように。</p>
+      </div>
+      <div class="card">
+        <h3>持ち出せます</h3>
+        <p>自分の記録はいつでもCSV / JSONで書き出せます。退会すればすべて削除されます。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="private">
+    <h2>公開する機能は、ありません</h2>
+    <p class="sub">見えるのは、招待コードでつながった相手だけ。</p>
+    <p>
+      不特定多数に見られる心配がないので、本音が書けます。
+      この制限はアプリの作りだけでなく、<strong>データベース側でも強制</strong>しています。
+      グループ外の人には1件も表示されません。
+    </p>
+    <p>
+      合わない相手が入ってしまったときは、グループの作成者がいつでも外せます。
+    </p>
+  </section>
+
+  <section id="scope">
+    <h2>飲食店だけではありません</h2>
+    <p class="sub">カフェ・美術館・ホテル・観光地も、同じように記録できます。</p>
+    <p>
+      「週末に行った美術館」も「去年泊まった宿」も、同じ地図の上に残ります。
+      友だちが旅行先で記録した場所を、地域からたどって探せます。
+    </p>
+  </section>
+
+  <footer>
+    <p>
+      <a href="privacy.html">プライバシーポリシー</a> ・
+      <a href="terms.html">利用規約</a>
+    </p>
+    <p class="note">
+      地図: Google Maps ／ 場所データ: © Overture Maps Foundation (CDLA Permissive 2.0)
+    </p>
+    <p class="note">&copy; イイトコ</p>
+  </footer>
+</div>
+
+</body>
+</html>
