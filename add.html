@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>イイトコで友だちになろう</title>
+<meta name="description" content="イイトコの友だち招待です。アプリで開くと友だちになれます。">
+<meta name="robots" content="noindex">
+<link rel="icon" href="icon.png">
+<meta property="og:title" content="イイトコで友だちになろう">
+<meta property="og:description" content="行ったお店・行ってみたいお店を友だちと見せ合えるアプリです。">
+<meta property="og:type" content="website">
+<style>
+  :root{
+    --bg:#fff8f0; --fg:#3a2c27; --muted:#7c7266; --line:#eadfd3;
+    --accent:#ff6f4e; --accent-weak:#ffe9e2; --card:#ffffff;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#17191c; --fg:#ece6df; --muted:#9aa0a6; --line:#2b3035;
+      --accent:#ff8a6e; --accent-weak:#3a2420; --card:#1f2327;
+    }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--fg);
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif;
+    line-height:1.7; -webkit-font-smoothing:antialiased;
+  }
+  main{max-width:460px; margin:0 auto; padding:40px 16px 56px; text-align:center}
+  .icon{width:84px; height:84px; border-radius:20px; box-shadow:0 6px 20px rgba(0,0,0,.12)}
+  h1{font-size:22px; margin:18px 0 6px}
+  p{margin:6px 0; color:var(--muted)}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:20px; padding:22px 18px; margin:24px 0}
+  .code{font-size:30px; font-weight:800; letter-spacing:.18em; color:var(--fg); margin:6px 0 2px; word-break:break-all}
+  .btn{display:block; width:100%; padding:15px; border-radius:999px; border:0; font-size:16px; font-weight:700;
+       text-decoration:none; cursor:pointer; margin-top:12px; font-family:inherit}
+  .primary{background:var(--accent); color:#fff}
+  .ghost{background:var(--accent-weak); color:var(--accent)}
+  ol{text-align:left; padding-left:1.4em; margin:8px 0 0; color:var(--fg)}
+  li{margin:6px 0}
+  .small{font-size:13px}
+  .error{color:#d33}
+  [hidden]{display:none !important}
+</style>
+</head>
+<body>
+<main>
+  <img class="icon" src="icon.png" alt="イイトコ">
+  <h1>イイトコで友だちになろう</h1>
+  <p>行ったお店・行ってみたいお店を、友だちどうしで見せ合えるアプリです。</p>
+
+  <div id="ok" hidden>
+    <div class="card">
+      <p class="small">友だちコード</p>
+      <div class="code" id="code"></div>
+      <a class="btn primary" id="open" href="#">アプリで開いて友だちになる</a>
+      <button class="btn ghost" id="copy" type="button">コードをコピー</button>
+    </div>
+
+    <div class="card">
+      <strong>アプリをまだ入れていない方</strong>
+      <ol>
+        <li id="store-line">App Store で「イイトコ」を入れる</li>
+        <li>アカウントを作る</li>
+        <li>このページに戻って「アプリで開いて友だちになる」を押す<br>
+          <span class="small">(または アプリの「友だち」→「友だちコードを入力する」に上のコードを入力)</span></li>
+      </ol>
+    </div>
+  </div>
+
+  <p id="bad" class="error" hidden>リンクが正しくありません。送ってくれた友だちに、もう一度送ってもらってください。</p>
+
+  <p class="small"><a href="./" style="color:var(--muted)">イイトコについて</a></p>
+</main>
+<script>
+  // App Store の公開後に、アプリの ID(App Store Connect →「App情報」→ Apple ID)を入れる。
+  // 空のままなら、App Store で検索してもらう案内だけを出す。
+  var APP_STORE_ID = '';
+
+  var raw = new URLSearchParams(location.search).get('c') || '';
+  var code = raw.trim().toUpperCase();
+  if (/^[A-Z0-9]{6,12}$/.test(code)) {
+    document.getElementById('ok').hidden = false;
+    document.getElementById('code').textContent = code;
+    document.getElementById('open').href = 'iitoko://app/add/' + code;
+    document.getElementById('copy').addEventListener('click', function () {
+      var done = function () { document.getElementById('copy').textContent = 'コピーしました'; };
+      if (navigator.clipboard) navigator.clipboard.writeText(code).then(done, done); else done();
+    });
+    if (APP_STORE_ID) {
+      var a = document.createElement('a');
+      a.href = 'https://apps.apple.com/jp/app/id' + APP_STORE_ID;
+      a.textContent = 'App Store で「イイトコ」を入れる';
+      var li = document.getElementById('store-line');
+      li.textContent = '';
+      li.appendChild(a);
+    }
+  } else {
+    document.getElementById('bad').hidden = false;
+  }
+</script>
+</body>
+</html>

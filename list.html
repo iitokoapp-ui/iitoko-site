@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>まとめ | イイトコ</title>
+<meta name="description" content="イイトコで作られたお店のまとめです。">
+<meta name="robots" content="noindex">
+<link rel="icon" href="icon.png">
+<meta property="og:title" content="お店のまとめ | イイトコ">
+<meta property="og:description" content="友だちが選んだお店のまとめです。">
+<meta property="og:type" content="website">
+<style>
+  :root{
+    --bg:#fff8f0; --fg:#3a2c27; --muted:#7c7266; --line:#eadfd3;
+    --accent:#ff6f4e; --accent-weak:#ffe9e2; --card:#ffffff; --star:#ffb400;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#17191c; --fg:#ece6df; --muted:#9aa0a6; --line:#2b3035;
+      --accent:#ff8a6e; --accent-weak:#3a2420; --card:#1f2327; --star:#ffc53d;
+    }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--fg);
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif;
+    line-height:1.7; -webkit-font-smoothing:antialiased;
+  }
+  main{max-width:640px; margin:0 auto; padding:28px 16px 56px}
+  header{margin-bottom:18px}
+  .by{color:var(--muted); font-size:14px; margin:0}
+  h1{font-size:24px; line-height:1.35; margin:4px 0 8px; overflow-wrap:anywhere}
+  .comment{white-space:pre-wrap; margin:0 0 4px; overflow-wrap:anywhere}
+  .count{color:var(--muted); font-size:13px}
+  ol{list-style:none; padding:0; margin:0}
+  li{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:14px 14px 12px; margin:10px 0;
+     display:flex; gap:12px; align-items:flex-start}
+  .num{flex:none; width:36px; height:36px; border-radius:50%; display:grid; place-items:center;
+       font-weight:800; color:#fff}
+  .body{flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; align-items:flex-start}
+  .name{font-weight:800; font-size:17px; overflow-wrap:anywhere}
+  .meta{color:var(--muted); font-size:13px; overflow-wrap:anywhere}
+  .stars{color:var(--star); font-size:14px; letter-spacing:1px}
+  .stars b{color:var(--fg); margin-left:4px; letter-spacing:0}
+  .note{font-size:14px; overflow-wrap:anywhere}
+  .map{font-size:13px; color:var(--accent); text-decoration:none; font-weight:700}
+  .cta{margin-top:28px; text-align:center; background:var(--accent-weak); border-radius:20px; padding:20px 16px}
+  .cta a{display:inline-block; margin-top:8px; background:var(--accent); color:#fff; text-decoration:none;
+         padding:12px 22px; border-radius:999px; font-weight:700}
+  .msg{color:var(--muted); text-align:center; padding:48px 0}
+</style>
+</head>
+<body>
+<main>
+  <div id="loading" class="msg">読み込んでいます…</div>
+  <div id="content" hidden>
+    <header>
+      <p class="by" id="by"></p>
+      <h1 id="title"></h1>
+      <p class="comment" id="comment"></p>
+      <span class="count" id="count"></span>
+    </header>
+    <ol id="items"></ol>
+  </div>
+  <div id="missing" class="msg" hidden>このまとめは見られません。<br>リンクが古いか、公開が止められています。</div>
+  <div class="cta">
+    行ったお店・行ってみたいお店を、友だちどうしで見せ合えるアプリ
+    <div><a href="./">イイトコについて</a></div>
+  </div>
+</main>
+<script>
+  // 公開してよい鍵(anon key)。読めるのは「リンクで公開されたまとめ」だけで、
+  // それもデータベース側の関数(get_shared_collection)が決めた項目に限られる。
+  var SUPABASE_URL = 'https://mmlnhiyppxcthtfhsszg.supabase.co';
+  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1tbG5oaXlwcHhjdGh0Zmhzc3pnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkwNDM3ODUsImV4cCI6MjEwNDYxOTc4NX0.pOcF2d1ikjU5xH5tkO8qUahhmGZo0ihV-QV3hK4ZC7A';
+
+  var COLORS = {restaurant:'#FF6B4A', cafe:'#E59A1F', salon:'#FF4F9A', museum:'#8B5CF6',
+                hotel:'#3B82F6', sightseeing:'#1FB57A', other:'#8A94A6'};
+  var LABELS = {restaurant:'飲食店', cafe:'カフェ', salon:'サロン', museum:'美術館',
+                hotel:'ホテル', sightseeing:'観光地', other:'その他'};
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function stars(r) {
+    var full = Math.round(r);
+    return '★★★★★'.slice(0, full) + '☆☆☆☆☆'.slice(0, 5 - full);
+  }
+  function show(id) { document.getElementById(id).hidden = false; }
+
+  var token = (new URLSearchParams(location.search).get('t') || '').trim();
+  document.getElementById('loading').hidden = true;
+  if (!/^[0-9a-f]{24}$/.test(token)) {
+    show('missing');
+  } else {
+    document.getElementById('loading').hidden = false;
+    fetch(SUPABASE_URL + '/rest/v1/rpc/get_shared_collection', {
+      method: 'POST',
+      headers: {'apikey': ANON_KEY, 'Authorization': 'Bearer ' + ANON_KEY,
+                'Content-Type': 'application/json'},
+      body: JSON.stringify({p_token: token})
+    }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (c) {
+        document.getElementById('loading').hidden = true;
+        if (!c) { show('missing'); return; }
+        document.title = c.title + ' | イイトコ';
+        document.getElementById('by').textContent = (c.owner || '') + ' さんのまとめ';
+        document.getElementById('title').textContent = c.title;
+        document.getElementById('comment').textContent = c.comment || '';
+        var items = c.items || [];
+        document.getElementById('count').textContent = items.length + '軒';
+        var list = document.getElementById('items');
+        items.forEach(function (it, i) {
+          var li = el('li');
+          var num = el('div', 'num', String(i + 1));
+          num.style.background = COLORS[it.category] || COLORS.other;
+          li.appendChild(num);
+          var body = el('div', 'body');
+          li.appendChild(body);
+          body.appendChild(el('div', 'name', it.name));
+          var meta = [LABELS[it.category] || 'その他'];
+          if (it.address) meta.push(it.address);
+          body.appendChild(el('div', 'meta', meta.join('・')));
+          if (it.rating != null) {
+            var s = el('div', 'stars', stars(Number(it.rating)));
+            s.appendChild(el('b', null, Number(it.rating).toFixed(1)));
+            body.appendChild(s);
+          }
+          if (it.note) body.appendChild(el('div', 'note', it.note));
+          var a = el('a', 'map', 'Google マップで見る');
+          a.href = 'https://www.google.com/maps/search/?api=1&query=' +
+                   encodeURIComponent(it.name + ' ' + (it.address || (it.lat + ',' + it.lng)));
+          a.target = '_blank'; a.rel = 'noopener';
+          body.appendChild(a);
+          list.appendChild(li);
+        });
+        show('content');
+      })
+      .catch(function () {
+        document.getElementById('loading').hidden = true;
+        show('missing');
+      });
+  }
+</script>
+</body>
+</html>
